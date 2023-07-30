@@ -4,17 +4,17 @@
 
 import { WebSocketServer, WebSocket } from "ws";
 
-export function create_wss() {
+export function createWss() {
 	// Create WebSocket server
 	const wss = new WebSocketServer({port: 947});
 
 	// On new connection
-	wss.on("connection", (ws) => wss_onconnection(ws));
+	wss.on("connection", (ws) => wssOnconnection(ws));
 
 	return wss;
 }
 
-function wss_onconnection(ws: WebSocket) {
+function wssOnconnection(ws: WebSocket) {
 	ws.on("message", (data) => {
 		let req: PlaceWSRequest;
 		// Try parsing data as JSON, else close WebSocket

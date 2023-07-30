@@ -2,13 +2,17 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
-import { WebSocketServer } from "ws";
-import { createClient } from "redis";
+import * as winston from "winston";
 
-import { create_wss } from "./wss";
+import { logger } from "./logging"
+import { createWss } from "./wss";
 
 async function main() {
-	const wss = create_wss();
+	console.log("Huechan /place/ Backend 1.0.0\n(c) 2023 HUE_TrashMe\n");
+
+	logger.http("[wss] Starting WebSocket server...");
+
+	const wss = createWss();
 }
 
 main();

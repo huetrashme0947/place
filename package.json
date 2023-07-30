@@ -1,13 +1,14 @@
 {
   "name": "huechan-place-backend",
   "version": "1.0.0",
-  "description": "WebSocket-based backend for huechan.com/place/",
+  "description": "Backend for huechan.com/place/ based on WebSockets and Redis",
   "main": "index.ts",
   "scripts": {
     "test": "tsc && node build/index.js"
   },
   "author": "HUE_TrashMe",
-  "license": "ISC",
+  "license": "UNLICENSED",
+  "private": "true",
   "devDependencies": {
     "@types/node": "^20.4.5",
     "@types/ws": "^8.5.5",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "redis": "^4.6.7",
+    "winston": "^3.10.0",
     "ws": "^8.13.0"
   }
 }
