@@ -3,13 +3,12 @@
 // (c) 2023 HUE_TrashMe
 
 import { WebSocketServer } from "ws";
+import { createClient } from "redis";
+
+import { create_wss } from "./wss";
 
 async function main() {
-	// Create WebSocket server
-	const wss = new WebSocketServer({port: 947});
-	wss.on("connection", (ws) => {
-		ws.send("lol");
-	});
+	const wss = create_wss();
 }
 
 main();
