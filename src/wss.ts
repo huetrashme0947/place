@@ -49,7 +49,9 @@ function isPlaceWSRequest(obj: any): obj is PlaceWSRequest {
 		return true;
 	} else if (obj.action === "poll") {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
+			obj.coordinates[0] >= 0 && obj.coordinates[0] <= 199 &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
+			obj.coordinates[1] >= 0 && obj.coordinates[1] <= 199 &&
 			typeof obj.coordinates[2] === "undefined") {
 			return true;
 		} else {
@@ -57,7 +59,9 @@ function isPlaceWSRequest(obj: any): obj is PlaceWSRequest {
 		}
 	} else if (obj.action === "draw") {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
+			obj.coordinates[0] >= 0 && obj.coordinates[0] <= 199 &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
+			obj.coordinates[1] >= 0 && obj.coordinates[1] <= 199 &&
 			typeof obj.coordinates[2] === "undefined" &&
 			Number(obj.color) === obj.color &&
 			obj.color >= 0 && obj.color <= 15) {
