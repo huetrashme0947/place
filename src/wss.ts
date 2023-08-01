@@ -5,6 +5,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 
 import { Coordinates, Colors } from "./types";
+import { action_poll } from "./poll";
 
 export function createWss() {
 	// Create WebSocket server
@@ -18,46 +19,59 @@ export function createWss() {
 
 function wssOnconnection(ws: WebSocket) {
 	ws.on("message", (data) => {
-		let req: PlaceWSRequest;
-		// Try parsing data as JSON, else close WebSocket
+		let req: Request;
+		// Try parsing data as JSON, else return error
 		try {
 			req = JSON.parse(data.toString());
-			if (!isPlaceWSRequest(req)) {
+			if (!isRequest(req)) {
 				throw new Error();
 			}
 		} catch {
-			ws.close(400, "Bad Request");
+			const res: ErrorResponse = {
+				success: false,
+				error_code: 400		// 400 Bad Request
+			}
+			ws.send(JSON.stringify(res));
 			return;
 		}
 
 		if (req.action == "canvas") {
 
-		} else if (req.action == "poll") {
-
+		} else if (req.action == "poll" && req.coordinates) {
+			action_poll(req.coordinates)
 		} else if (req.action == "draw") {
 
 		}
 	});
 }
 
-interface PlaceWSRequest {
-	action: PlaceWSRequestActions,
+interface Request {
+	action: RequestActions,
 	coordinates?: Coordinates,
 	color?: Colors
 }
 
-enum PlaceWSRequestActions {
+enum RequestActions {
 	Info = "info",
 	Canvas = "canvas",
 	Poll = "poll",
 	Draw = "draw"
 }
 
-function isPlaceWSRequest(obj: any): obj is PlaceWSRequest {
-	if (obj.action === PlaceWSRequestActions.Canvas ||
-		obj.action === PlaceWSRequestActions.Info) {
+export interface Response {
+	success: boolean
+}
+
+interface ErrorResponse extends Response {
+	success: false,
+	error_code: number
+}
+
+function isRequest(obj: any): obj is Request {
+	if (obj.action === RequestActions.Canvas ||
+		obj.action === RequestActions.Info) {
 		return true;
-	} else if (obj.action === PlaceWSRequestActions.Poll) {
+	} else if (obj.action === RequestActions.Poll) {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
 			typeof obj.coordinates[2] === "undefined") {
@@ -65,7 +79,7 @@ function isPlaceWSRequest(obj: any): obj is PlaceWSRequest {
 		} else {
 			return false;
 		}
-	} else if (obj.action === PlaceWSRequestActions.Draw) {
+	} else if (obj.action === RequestActions.Draw) {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
 			typeof obj.coordinates[2] === "undefined" &&

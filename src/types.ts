@@ -6,9 +6,9 @@ export type Coordinates = readonly [x: number, y: number];
 
 export enum Colors {
 	White,
-	LightGrey,
-	DarkGrey,
+	Grey,
 	Black,
+	Brown,
 
 	Pink,
 	Purple,
@@ -20,9 +20,9 @@ export enum Colors {
 	LightGreen,
 	DarkGreen,
 
-	Brown,
 	OceanBlue,
 	DarkBlue,
 	
+	Serbia,
 	Albania
 }

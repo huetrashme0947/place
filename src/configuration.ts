@@ -49,16 +49,16 @@ export async function getConfigValue<K extends keyof Configuration>(key: K): Pro
 	return configuration[key];
 }
 
-export async function getCurrentTileSize() {
+export async function getCurrentCanvasSize() {
 	if (Date.now() < Date.parse(String(await getConfigValue(ConfigurationKeys.FirstExpansion)))) {
 		// Current time is before first_expansion, so return canvas_size_start
-		return await getConfigValue(ConfigurationKeys.CanvasSizeStart) as [x: number, y: number];
+		return await getConfigValue(ConfigurationKeys.CanvasSizeStart);
 	} else if (Date.now() < Date.parse(String(await getConfigValue(ConfigurationKeys.SecondExpansion)))) {
 		// Current time is before second_expansion, so return canvas_size_first_expansion
-		return await getConfigValue(ConfigurationKeys.CanvasSizeFirstExpansion) as [x: number, y: number];
+		return await getConfigValue(ConfigurationKeys.CanvasSizeFirstExpansion);
 	} else {
 		// Current time is after or equal to second_expansion, so return canvas_size_second_expansion
-		return await getConfigValue(ConfigurationKeys.CanvasSizeSecondExpansion) as [x: number, y: number];
+		return await getConfigValue(ConfigurationKeys.CanvasSizeSecondExpansion);
 	}
 }
 
