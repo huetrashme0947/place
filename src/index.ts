@@ -5,8 +5,10 @@
 import { logger } from "./logging";
 import { createWss } from "./wss";
 
+const PACKAGE_VERSION = "1.0.0";
+
 async function main() {
-	console.log("Huechan /place/ Backend 1.0.0\n(c) 2023 HUE_TrashMe\n");
+	console.log(`Huechan /place/ Backend ${PACKAGE_VERSION}\n(c) 2023 HUE_TrashMe\n`);
 
 	logger.info("[wss] Starting WebSocket server...");
 

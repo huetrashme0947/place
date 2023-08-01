@@ -4,6 +4,8 @@
 
 import { WebSocketServer, WebSocket } from "ws";
 
+import { Coordinates, Colors } from "./types";
+
 export function createWss() {
 	// Create WebSocket server
 	const wss = new WebSocketServer({port: 947});
@@ -39,29 +41,33 @@ function wssOnconnection(ws: WebSocket) {
 }
 
 interface PlaceWSRequest {
-	action: string,
-	coordinates?: readonly [x: number, y: number],
-	color?: number
+	action: PlaceWSRequestActions,
+	coordinates?: Coordinates,
+	color?: Colors
+}
+
+enum PlaceWSRequestActions {
+	Info = "info",
+	Canvas = "canvas",
+	Poll = "poll",
+	Draw = "draw"
 }
 
 function isPlaceWSRequest(obj: any): obj is PlaceWSRequest {
-	if (obj.action === "canvas") {
+	if (obj.action === PlaceWSRequestActions.Canvas ||
+		obj.action === PlaceWSRequestActions.Info) {
 		return true;
-	} else if (obj.action === "poll") {
+	} else if (obj.action === PlaceWSRequestActions.Poll) {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
-			obj.coordinates[0] >= 0 && obj.coordinates[0] <= 199 &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
-			obj.coordinates[1] >= 0 && obj.coordinates[1] <= 199 &&
 			typeof obj.coordinates[2] === "undefined") {
 			return true;
 		} else {
 			return false;
 		}
-	} else if (obj.action === "draw") {
+	} else if (obj.action === PlaceWSRequestActions.Draw) {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
-			obj.coordinates[0] >= 0 && obj.coordinates[0] <= 199 &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
-			obj.coordinates[1] >= 0 && obj.coordinates[1] <= 199 &&
 			typeof obj.coordinates[2] === "undefined" &&
 			Number(obj.color) === obj.color &&
 			obj.color >= 0 && obj.color <= 15) {
