@@ -40,6 +40,11 @@ interface Configuration {
 	[ConfigurationKeys.AlbaniaCooldown]: number
 }
 
+/**
+ * Returns the value of the specified configuration option.
+ * @param {K} key The configuration option to be returned
+ * @returns {Promise<Configuration[K]>}
+ */
 export async function getConfigValue<K extends keyof Configuration>(key: K): Promise<Configuration[K]> {
 	// Check if configuration is ready, wait if not
 	if (configuration === undefined) {
@@ -49,6 +54,10 @@ export async function getConfigValue<K extends keyof Configuration>(key: K): Pro
 	return configuration[key];
 }
 
+/**
+ * Returns the current size of the canvas.
+ * @returns {Promise<Coordinates>}
+ */
 export async function getCurrentCanvasSize() {
 	if (Date.now() < Date.parse(String(await getConfigValue(ConfigurationKeys.FirstExpansion)))) {
 		// Current time is before first_expansion, so return canvas_size_start
@@ -62,6 +71,10 @@ export async function getCurrentCanvasSize() {
 	}
 }
 
+/**
+ * Returns whether Albania mode is currently in force, meaning that only Albania and Serbia tiles can be drawn.
+ * @returns {Promise<boolean>}
+ */
 export async function checkForAlbaniaMode() {
 	return Date.now() >= Date.parse(String(await getConfigValue(ConfigurationKeys.AlbaniaModeStartup)));
 }
