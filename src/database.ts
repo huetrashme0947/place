@@ -71,7 +71,7 @@ export class Database {
 			"offset": await this.calculateTileOffset(coordinates)
 		}]);
 
-		return color ? color : Colors.White;
+		return color ? color as Colors : Colors.White;
 	}
 
 	/**

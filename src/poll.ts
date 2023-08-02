@@ -3,35 +3,44 @@
 // (c) 2023 HUE_TrashMe
 
 import { Colors, Coordinates } from "./types";
-import { Response } from "./wss";
+import { WSSuccessResponse, WSRequestActions, WSErrorResponse } from "./wss";
 import { Database } from "./database";
+import { getCurrentCanvasSize } from "./configuration";
 
 /**
- * Returns a {@link PollResponse} containung the color and timestamp of the given tile.
+ * Returns a {@link PollResponse} containing the color and timestamp of the given tile.
  * @param coordinates Coordinates of tile
  */
 export async function action_poll(coordinates: Coordinates) {
-	const res: PollResponse = {
+	// Check if coordinates are valid
+	const canvasSize = await getCurrentCanvasSize();
+	if (coordinates[0] < 0 ||
+		coordinates[0] >= canvasSize[0] ||
+		coordinates[1] < 0 ||
+		coordinates[1] >= canvasSize[1]) {
+			return {
+				success: false,
+				action: WSRequestActions.Poll,
+				error_code: 403		// 403 Forbidden
+			} as WSErrorResponse;
+		}
+
+	const res: WSPollResponse = {
 		success: true,
+		action: WSRequestActions.Poll,
 		coordinates: coordinates,
 		color: Colors.White,
 		timestamp: 0
 	}
 	
 	// Get color and timestamp values from database
-	const color = await Database.getTile(coordinates);
-	const timestamp = await Database.getDrawTimestamp(coordinates);
+	res.color = await Database.getTile(coordinates);
+	res.timestamp = await Database.getDrawTimestamp(coordinates);
 
-	return {
-		success: true,
-		coordinates: coordinates,
-		color: color,
-		timestamp: timestamp
-	} as PollResponse;
+	return res;
 }
 
-interface PollResponse extends Response {
-	success: true,
+interface WSPollResponse extends WSSuccessResponse {
 	coordinates: Coordinates,
 	color: Colors,
 	timestamp: number

@@ -21,38 +21,50 @@ export function createWss() {
 }
 
 function wssOnconnection(ws: WebSocket) {
-	ws.on("message", (data) => {
-		let req: Request;
+	ws.on("message", async (data) => {
+		let req: WSRequest;
 		// Try parsing data as JSON, else return error
 		try {
 			req = JSON.parse(data.toString());
-			if (!isRequest(req)) {
+			if (!isWSRequest(req)) {
 				throw new Error();
 			}
 		} catch {
-			const res: ErrorResponse = {
+			const res: WSErrorResponse = {
 				success: false,
+				action: WSRequestActions.Unknown,
 				error_code: 400		// 400 Bad Request
 			}
 			ws.send(JSON.stringify(res));
 			return;
 		}
 
-		if (req.action == "canvas") {
+		let res: WSResponse;
 
-		} else if (req.action == "poll" && req.coordinates) {
-			action_poll(req.coordinates)
-		} else if (req.action == "draw") {
+		if (req.action == WSRequestActions.Canvas) {
 
+		} else if (req.action == WSRequestActions.Poll && req.coordinates) {
+			res = await action_poll(req.coordinates);
+		} else if (req.action == WSRequestActions.Draw) {
+
+		} else {
+			res = {
+				success: false,
+				action: WSRequestActions.Unknown,
+				error_code: 400		// 400 Bad Request
+			} as WSErrorResponse;
 		}
+
+		ws.send(JSON.stringify(res));
+		return;
 	});
 }
 
 /**
  * Incoming WebSocket request received by a client.
  */
-interface Request {
-	action: RequestActions,
+interface WSRequest {
+	action: WSRequestActions,
 	coordinates?: Coordinates,
 	color?: Colors
 }
@@ -60,37 +72,48 @@ interface Request {
 /**
  * Actions supported by the WebSocket server.
  */
-enum RequestActions {
+export enum WSRequestActions {
 	Info = "info",
 	Canvas = "canvas",
 	Poll = "poll",
-	Draw = "draw"
+	Draw = "draw",
+	Unknown = "unknown"
 }
 
 /**
  * Response returned by the WebSocket server.
  */
-export interface Response {
+export interface WSResponse {
 	success: boolean
+}
+
+/**
+ * Response returned by the WebSocket server in case of an successful action.
+ */
+export interface WSSuccessResponse extends WSResponse {
+	success: true,
+	action: WSRequestActions
 }
 
 /**
  * Response returned by the WebSocket server in case of an unsuccessful action or invalid request.
  */
-interface ErrorResponse extends Response {
+export interface WSErrorResponse extends WSResponse {
 	success: false,
+	action: WSRequestActions,
 	error_code: number
 }
 
 /**
- * Type guard for the {@link Request} interface. Checks the given object literal for interface compliance.
+ * Type guard for {@link WSRequest}. Checks the given object literal for interface compliance.
  * @param obj Object to check
+ * @deprecated Interface compliance is now checked by the action functions themselves, rendering this function obsolete.
  */
-function isRequest(obj: any): obj is Request {
-	if (obj.action === RequestActions.Canvas ||
-		obj.action === RequestActions.Info) {
+function isWSRequest(obj: any): obj is Request {
+	if (obj.action === WSRequestActions.Canvas ||
+		obj.action === WSRequestActions.Info) {
 		return true;
-	} else if (obj.action === RequestActions.Poll) {
+	} else if (obj.action === WSRequestActions.Poll) {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
 			typeof obj.coordinates[2] === "undefined") {
@@ -98,12 +121,12 @@ function isRequest(obj: any): obj is Request {
 		} else {
 			return false;
 		}
-	} else if (obj.action === RequestActions.Draw) {
+	} else if (obj.action === WSRequestActions.Draw) {
 		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
 			Number(obj.coordinates[1]) === obj.coordinates[1] &&
 			typeof obj.coordinates[2] === "undefined" &&
 			Number(obj.color) === obj.color &&
-			obj.color >= 0 && obj.color <= 15) {
+			obj.color >= Colors.White && obj.color <= Colors.Albania) {
 			return true;
 		} else {
 			return false;
