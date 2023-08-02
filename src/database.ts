@@ -1,6 +1,7 @@
 // src/database.ts
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
+/** @author HUE_TrashMe <heuhaufen@huechan.com> */
 
 import { createClient } from "redis";
 
@@ -8,18 +9,22 @@ import { logger } from "./logging";
 import { Colors, Coordinates } from "./types";
 import { getCurrentCanvasSize } from "./configuration";
 
-namespace Database {
-	let client = createClient();
+/**
+ * Contains high level (use case-specific) static methods for accessing the Redis database.
+ */
+export class Database {
+	private static client = createClient();
 
 	/**
 	 * Initializes the Redis client and connects it to the database.
+	 * @private
 	 */
-	async function setupClient() {
+	private static async setupClient() {
 		logger.info("[database] Connecting to database...");
 
 		try {
-			client.on("error", err => { throw err });
-			await client.connect();
+			this.client.on("error", err => { throw err });
+			await this.client.connect();
 		} catch (err) {
 			logger.error("[database] An error occured while establishing connection to database");
 			throw err;
@@ -32,39 +37,40 @@ namespace Database {
 	 * Overwrites the tile at the given coordinates with the given color and updates the corresponding timestamp.
 	 * @param coordinates Coordinates of the tile to be written
 	 * @param color Color to write to the given tile
+	 * @public
 	 */
-	export async function setTile(coordinates: Coordinates, color: Colors) {
+	public static async setTile(coordinates: Coordinates, color: Colors) {
 		// Check if client is ready to answer requests, if not wait
-		if (!client.isReady) {
-			await setupClient();
+		if (!this.client.isReady) {
+			await this.setupClient();
 		}
 		
 		// Update tile
-		await client.bitField("place", [{
+		await this.client.bitField("place", [{
 			"operation": "SET",
 			"encoding": "u4",
-			"offset": await calculateTileOffset(coordinates),
+			"offset": await this.calculateTileOffset(coordinates),
 			"value": color
 		}]);
 
 		// Update timestamp
-		await client.set(`place_timestamp:${coordinates[0]}:${coordinates[1]}`, Date.now());
+		await this.client.set(`place_timestamp:${coordinates[0]}:${coordinates[1]}`, Date.now());
 	}
 
 	/**
 	 * Returns the color of the given tile.
 	 * @param coordinates Coordinates of tile
 	 */
-	export async function getTile(coordinates: Coordinates) {
+	public static async getTile(coordinates: Coordinates) {
 		// Check if client is ready to answer requests, if not wait
-		if (!client.isReady) {
-			await setupClient();
+		if (!this.client.isReady) {
+			await this.setupClient();
 		}
 
-		const [color] = await client.bitField("place", [{
+		const [color] = await this.client.bitField("place", [{
 			"operation": "GET",
 			"encoding": "u4",
-			"offset": await calculateTileOffset(coordinates)
+			"offset": await this.calculateTileOffset(coordinates)
 		}]);
 
 		return color ? color : Colors.White;
@@ -74,23 +80,21 @@ namespace Database {
 	 * Returns the timestamp of when the given tile was last updated.
 	 * @param coordinates Coordinates of tile
 	 */
-	export async function getDrawTimestamp(coordinates: Coordinates) {
+	public static async getDrawTimestamp(coordinates: Coordinates) {
 		// Check if client is ready to answer requests, if not wait
-		if (!client.isReady) {
-			await setupClient();
+		if (!this.client.isReady) {
+			await this.setupClient();
 		}
 
-		return await client.get(`place_timestamp:${coordinates[0]}:${coordinates[1]}`);
+		return await this.client.get(`place_timestamp:${coordinates[0]}:${coordinates[1]}`);
 	}
 
 	/**
 	 * Calculates the offset used to address the database bitfield based on the coordinates of a tile.
 	 * @param coordinates Coordinates of tile
 	 */
-	async function calculateTileOffset(coordinates: Coordinates) {
+	private static async calculateTileOffset(coordinates: Coordinates) {
 		const [canvasWidth] = await getCurrentCanvasSize();
 		return ((coordinates[1] * canvasWidth) + coordinates[0]) * 4;
 	}
 }
-
-export default Database;
