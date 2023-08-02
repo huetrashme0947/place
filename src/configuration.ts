@@ -42,8 +42,7 @@ interface Configuration {
 
 /**
  * Returns the value of the specified configuration option.
- * @param {K} key The configuration option to be returned
- * @returns {Promise<Configuration[K]>}
+ * @param key The configuration option to be returned
  */
 export async function getConfigValue<K extends keyof Configuration>(key: K): Promise<Configuration[K]> {
 	// Check if configuration is ready, wait if not
@@ -56,7 +55,6 @@ export async function getConfigValue<K extends keyof Configuration>(key: K): Pro
 
 /**
  * Returns the current size of the canvas.
- * @returns {Promise<Coordinates>}
  */
 export async function getCurrentCanvasSize() {
 	if (Date.now() < Date.parse(String(await getConfigValue(ConfigurationKeys.FirstExpansion)))) {
@@ -73,7 +71,6 @@ export async function getCurrentCanvasSize() {
 
 /**
  * Returns whether Albania mode is currently in force, meaning that only Albania and Serbia tiles can be drawn.
- * @returns {Promise<boolean>}
  */
 export async function checkForAlbaniaMode() {
 	return Date.now() >= Date.parse(String(await getConfigValue(ConfigurationKeys.AlbaniaModeStartup)));
@@ -81,7 +78,6 @@ export async function checkForAlbaniaMode() {
 
 /**
  * Reads the configuration file into memory.
- * @returns {Promise<void>}
  */
 async function readConfigFile() {
 	try {

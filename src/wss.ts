@@ -7,6 +7,9 @@ import { WebSocketServer, WebSocket } from "ws";
 import { Coordinates, Colors } from "./types";
 import { action_poll } from "./poll";
 
+/**
+ * Creates and configures a new {@link WebSocketServer} and returns it.
+ */
 export function createWss() {
 	// Create WebSocket server
 	const wss = new WebSocketServer({port: 947});
@@ -45,12 +48,18 @@ function wssOnconnection(ws: WebSocket) {
 	});
 }
 
+/**
+ * Incoming WebSocket request received by a client.
+ */
 interface Request {
 	action: RequestActions,
 	coordinates?: Coordinates,
 	color?: Colors
 }
 
+/**
+ * Actions supported by the WebSocket server.
+ */
 enum RequestActions {
 	Info = "info",
 	Canvas = "canvas",
@@ -58,15 +67,25 @@ enum RequestActions {
 	Draw = "draw"
 }
 
+/**
+ * Response returned by the WebSocket server.
+ */
 export interface Response {
 	success: boolean
 }
 
+/**
+ * Response returned by the WebSocket server in case of an unsuccessful action or invalid request.
+ */
 interface ErrorResponse extends Response {
 	success: false,
 	error_code: number
 }
 
+/**
+ * Type guard for the {@link Request} interface. Checks the given object literal for interface compliance.
+ * @param obj Object to check
+ */
 function isRequest(obj: any): obj is Request {
 	if (obj.action === RequestActions.Canvas ||
 		obj.action === RequestActions.Info) {

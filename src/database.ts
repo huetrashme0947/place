@@ -17,7 +17,6 @@ export class Database {
 
 	/**
 	 * Initializes the Redis client and connects it to the database.
-	 * @private
 	 */
 	private static async setupClient() {
 		logger.info("[database] Connecting to database...");
@@ -37,7 +36,6 @@ export class Database {
 	 * Overwrites the tile at the given coordinates with the given color and updates the corresponding timestamp.
 	 * @param coordinates Coordinates of the tile to be written
 	 * @param color Color to write to the given tile
-	 * @public
 	 */
 	public static async setTile(coordinates: Coordinates, color: Colors) {
 		// Check if client is ready to answer requests, if not wait
