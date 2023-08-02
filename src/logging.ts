@@ -4,6 +4,8 @@
 
 import * as winston from "winston";
 
+const LOGFILE = "log/combined.log";
+
 const logfileFormat = winston.format.printf(({ level, message, label, timestamp }) => {
 	return `[${timestamp}] [${level}] ${message}`;
 });
@@ -39,10 +41,13 @@ const consoleFormat = winston.format.printf(({ level, message, label, timestamp 
 	return output;
 });
 
+/**
+ * Global interface for logging status messages to the console and a shared logfile.
+ */
 export const logger = winston.createLogger({
 	level: "silly",
 	transports: [
 		new winston.transports.Console({ format: winston.format.combine(winston.format.timestamp(), consoleFormat) }),
-		new winston.transports.File({ filename: "log/combined.log", level: "info", format: winston.format.combine(winston.format.timestamp(), logfileFormat) })
+		new winston.transports.File({ filename: LOGFILE, level: "info", format: winston.format.combine(winston.format.timestamp(), logfileFormat) })
 	]
 });
