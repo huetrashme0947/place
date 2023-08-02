@@ -86,7 +86,7 @@ export class Database {
 			await this.setupClient();
 		}
 
-		return await this.client.get(`place_timestamp:${coordinates[0]}:${coordinates[1]}`);
+		return Number(await this.client.get(`place_timestamp:${coordinates[0]}:${coordinates[1]}`));
 	}
 
 	/**
