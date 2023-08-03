@@ -2,7 +2,7 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
-import { logger } from "./logging";
+import { logger, silenceLogger } from "./logging";
 import { createWss } from "./wss";
 import { ConfigurationKeys, getConfigValue } from "./configuration";
 import { Database } from "./database";
@@ -13,8 +13,12 @@ const PACKAGE_VERSION = "1.0.0";
  * The project's main function. Starts the WebSocket server and initializes all modules.
  * @alpha
  */
-async function main() {
-	console.log(`Huechan /place/ Backend ${PACKAGE_VERSION}\n(c) 2023 HUE_TrashMe\n`);
+export async function main(silent = false) {
+	if (!silent) {
+		console.log(`Huechan /place/ Backend ${PACKAGE_VERSION}\n(c) 2023 HUE_TrashMe\n`);
+	} else {
+		silenceLogger();
+	}
 
 	// Test configuration and database modules
 	try {

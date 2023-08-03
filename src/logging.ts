@@ -51,3 +51,7 @@ export const logger = winston.createLogger({
 		new winston.transports.File({ filename: LOGFILE, level: "info", format: winston.format.combine(winston.format.timestamp(), logfileFormat) })
 	]
 });
+
+export function silenceLogger() {
+	logger.silent = true;
+}
