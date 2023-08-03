@@ -3,9 +3,18 @@
 // (c) 2023 HUE_TrashMe
 
 import { WebSocketServer, WebSocket } from "ws";
+import { IncomingMessage } from "http";
+import { v4 as uuidv4 } from "uuid";
 
 import { Coordinates, Colors } from "./types";
 import { action_poll } from "./poll";
+import { logger } from "./logging";
+
+let clients: { [index: string]: WebSocket } = {};
+
+function getUUID(ws: WebSocket) {
+	return String(Object.keys(clients).find(key => clients[key] === ws));
+}
 
 /**
  * Creates and configures a new {@link WebSocketServer} and returns it.
@@ -15,20 +24,17 @@ export function createWss() {
 	const wss = new WebSocketServer({port: 947});
 
 	// On new connection
-	wss.on("connection", (ws) => wssOnconnection(ws));
+	wss.on("connection", (ws, req) => wssOnconnection(ws, req));
 
 	return wss;
 }
 
-function wssOnconnection(ws: WebSocket) {
+function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 	ws.on("message", async (data) => {
 		let req: WSRequest;
 		// Try parsing data as JSON, else return error
 		try {
 			req = JSON.parse(data.toString());
-			if (!isWSRequest(req)) {
-				throw new Error();
-			}
 		} catch {
 			const res: WSErrorResponse = {
 				success: false,
@@ -42,22 +48,39 @@ function wssOnconnection(ws: WebSocket) {
 		let res: WSResponse;
 
 		if (req.action == WSRequestActions.Canvas) {
-
+			return;
 		} else if (req.action == WSRequestActions.Poll && req.coordinates) {
 			res = await action_poll(req.coordinates);
 		} else if (req.action == WSRequestActions.Draw) {
-
+			return;
 		} else {
 			res = {
 				success: false,
 				action: WSRequestActions.Unknown,
 				error_code: 400		// 400 Bad Request
 			} as WSErrorResponse;
+			req.action = WSRequestActions.Unknown;
 		}
 
 		ws.send(JSON.stringify(res));
+		logger.http(`[wss] [${getUUID(ws)}] Answered "${req.action}" request (success=${res.success})`);
 		return;
 	});
+
+	function closeWS() {
+		// Remove client from clients and log
+		let uuid = getUUID(ws);
+		delete clients[uuid];
+		logger.http(`[wss] [${uuid}] Connection closed with ${httpReq.socket.remoteAddress}`);
+	}
+	ws.on("close", closeWS);
+	ws.on("error", closeWS);
+
+	// Generate client UUID and push to clients
+	let uuid = uuidv4().slice(0,8);
+	clients[uuid] = ws;
+
+	logger.http(`[wss] [${uuid}] Connection established with ${httpReq.socket.remoteAddress}`);
 }
 
 /**
@@ -109,7 +132,7 @@ export interface WSErrorResponse extends WSResponse {
  * @param obj Object to check
  * @deprecated Interface compliance is now checked by the action functions themselves, rendering this function obsolete.
  */
-function isWSRequest(obj: any): obj is Request {
+function isWSRequest(obj: any): obj is WSRequest {
 	if (obj.action === WSRequestActions.Canvas ||
 		obj.action === WSRequestActions.Info) {
 		return true;

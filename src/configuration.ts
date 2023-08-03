@@ -4,15 +4,19 @@
 
 import * as fs from "fs/promises";
 import { resolve } from "path";
+const jsonminify = require("jsonminify");
 
 import { logger } from "./logging";
 import { Coordinates } from "./types";
 
-const CONFIG_FILE = "config.jsonc";
+const CONFIG_FILE = "place.config.json";
 
 let configuration: Configuration;
 
-enum ConfigurationKeys {
+/**
+ * Configuration options supported by the configuration module.
+ */
+export enum ConfigurationKeys {
 	Startup = "startup",
 	CanvasSizeStart = "canvas_size_start",
 	FirstExpansion = "first_expansion",
@@ -26,7 +30,10 @@ enum ConfigurationKeys {
 	AlbaniaCooldown = "albania_cooldown"
 }
 
-interface Configuration {
+/**
+ * Represents a parsed configuration file.
+ */
+export interface Configuration {
 	[ConfigurationKeys.Startup]: string,
 	[ConfigurationKeys.CanvasSizeStart]: Coordinates,
 	[ConfigurationKeys.FirstExpansion]: string,
@@ -83,7 +90,7 @@ async function readConfigFile() {
 	try {
 		// Read file and parse JSON data
 		let data = await fs.readFile(resolve(CONFIG_FILE), "utf-8");
-		configuration = JSON.parse(data);
+		configuration = JSON.parse(JSON.minify(data));
 	} catch (err) {
 		// Log error and throw exception if failed
 		logger.error(`[configuration] ${resolve(CONFIG_FILE)} could not be read or is not a valid JSON file.`);

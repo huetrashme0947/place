@@ -10,12 +10,16 @@
   "license": "UNLICENSED",
   "private": "true",
   "devDependencies": {
+    "@types/jsonminify": "^0.4.1",
     "@types/node": "^20.4.5",
+    "@types/uuid": "^9.0.2",
     "@types/ws": "^8.5.5",
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "jsonminify": "^0.4.2",
     "redis": "^4.6.7",
+    "uuid": "^9.0.0",
     "winston": "^3.10.0",
     "ws": "^8.13.0"
   }
