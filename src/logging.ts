@@ -29,7 +29,7 @@ const consoleFormat = winston.format.printf(({ level, message, label, timestamp 
 		case "verbose":
 		case "debug":
 		case "silly":
-			output = `\u001b[34m${output}\u001b[0m`;
+			output = `\u001b[36m${output}\u001b[0m`;
 			break;
 		
 		// Output message in white
