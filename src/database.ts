@@ -22,7 +22,7 @@ export class Database {
 		logger.info("[database] Connecting to database...");
 
 		try {
-			this.client.on("error", err => { throw err });
+			this.client.on("error", err => { throw err; });
 			await this.client.connect();
 		} catch (err) {
 			logger.error("[database] An error occured while establishing connection to database");

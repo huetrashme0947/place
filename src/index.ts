@@ -30,6 +30,7 @@ export async function main(silent = false) {
 
 	logger.info("[wss] Starting WebSocket server...");
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const wss = createWss();
 
 	logger.info("[wss] Ready");

@@ -18,12 +18,12 @@ export async function action_poll(coordinates: Coordinates) {
 		coordinates[0] >= canvasSize[0] ||
 		coordinates[1] < 0 ||
 		coordinates[1] >= canvasSize[1]) {
-			return {
-				success: false,
-				action: WSRequestActions.Poll,
-				error_code: 403		// 403 Forbidden
-			} as WSErrorResponse;
-		}
+		return {
+			success: false,
+			action: WSRequestActions.Poll,
+			error_code: 403		// 403 Forbidden
+		} as WSErrorResponse;
+	}
 
 	const res: WSPollResponse = {
 		success: true,
@@ -31,7 +31,7 @@ export async function action_poll(coordinates: Coordinates) {
 		coordinates: coordinates,
 		color: Colors.White,
 		timestamp: 0
-	}
+	};
 	
 	// Get color and timestamp values from database
 	res.color = await Database.getTile(coordinates);

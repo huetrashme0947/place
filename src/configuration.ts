@@ -4,7 +4,7 @@
 
 import * as fs from "fs/promises";
 import { resolve } from "path";
-const jsonminify = require("jsonminify");
+import jsonminify from "jsonminify";
 
 import { logger } from "./logging";
 import { Coordinates } from "./types";
@@ -89,8 +89,8 @@ export async function checkForAlbaniaMode() {
 async function readConfigFile() {
 	try {
 		// Read file and parse JSON data
-		let data = await fs.readFile(resolve(CONFIG_FILE), "utf-8");
-		configuration = JSON.parse(JSON.minify(data));
+		const data = await fs.readFile(resolve(CONFIG_FILE), "utf-8");
+		configuration = JSON.parse(jsonminify(data));
 	} catch (err) {
 		// Log error and throw exception if failed
 		logger.error(`[configuration] ${resolve(CONFIG_FILE)} could not be read or is not a valid JSON file.`);

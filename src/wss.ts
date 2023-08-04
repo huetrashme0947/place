@@ -10,7 +10,7 @@ import { Coordinates, Colors } from "./types";
 import { action_poll } from "./poll";
 import { logger } from "./logging";
 
-let clients: { [index: string]: WebSocket } = {};
+const clients: { [index: string]: WebSocket } = {};
 
 function getUUID(ws: WebSocket) {
 	return String(Object.keys(clients).find(key => clients[key] === ws));
@@ -40,7 +40,7 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 				success: false,
 				action: WSRequestActions.Unknown,
 				error_code: 400		// 400 Bad Request
-			}
+			};
 			ws.send(JSON.stringify(res));
 			return;
 		}
@@ -69,7 +69,7 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 
 	function closeWS() {
 		// Remove client from clients and log
-		let uuid = getUUID(ws);
+		const uuid = getUUID(ws);
 		delete clients[uuid];
 		logger.http(`[wss] [${uuid}] Connection closed with ${httpReq.socket.remoteAddress}`);
 	}
@@ -77,7 +77,7 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 	ws.on("error", closeWS);
 
 	// Generate client UUID and push to clients
-	let uuid = uuidv4().slice(0,8);
+	const uuid = uuidv4().slice(0,8);
 	clients[uuid] = ws;
 
 	logger.http(`[wss] [${uuid}] Connection established with ${httpReq.socket.remoteAddress}`);
@@ -125,36 +125,4 @@ export interface WSErrorResponse extends WSResponse {
 	success: false,
 	action: WSRequestActions,
 	error_code: number
-}
-
-/**
- * Type guard for {@link WSRequest}. Checks the given object literal for interface compliance.
- * @param obj Object to check
- * @deprecated Interface compliance is now checked by the action functions themselves, rendering this function obsolete.
- */
-function isWSRequest(obj: any): obj is WSRequest {
-	if (obj.action === WSRequestActions.Canvas ||
-		obj.action === WSRequestActions.Info) {
-		return true;
-	} else if (obj.action === WSRequestActions.Poll) {
-		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
-			Number(obj.coordinates[1]) === obj.coordinates[1] &&
-			typeof obj.coordinates[2] === "undefined") {
-			return true;
-		} else {
-			return false;
-		}
-	} else if (obj.action === WSRequestActions.Draw) {
-		if (Number(obj.coordinates[0]) === obj.coordinates[0] &&
-			Number(obj.coordinates[1]) === obj.coordinates[1] &&
-			typeof obj.coordinates[2] === "undefined" &&
-			Number(obj.color) === obj.color &&
-			obj.color >= Colors.White && obj.color <= Colors.Albania) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	return false;
 }

@@ -6,36 +6,36 @@ import * as winston from "winston";
 
 const LOGFILE = "log/combined.log";
 
-const logfileFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+const logfileFormat = winston.format.printf(({ level, message, timestamp }) => {
 	return `[${timestamp}] [${level}] ${message}`;
 });
 
-const consoleFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+const consoleFormat = winston.format.printf(({ level, message, timestamp }) => {
 	let output = `[${timestamp}] [${level}] ${message}`;
 
 	switch (level) {
-		// Output message in red
-		case "error":
-			output = `\u001b[31m${output}\u001b[0m`;
-			break;
-		
-		// Output message in yellow
-		case "warn":
-			output = `\u001b[33m${output}\u001b[0m`;
-			break;
-		
-		// Output message in blue
-		case "http":
-		case "verbose":
-		case "debug":
-		case "silly":
-			output = `\u001b[36m${output}\u001b[0m`;
-			break;
-		
-		// Output message in white
-		case "info":
-		default:
-			break;
+	// Output message in red
+	case "error":
+		output = `\u001b[31m${output}\u001b[0m`;
+		break;
+	
+	// Output message in yellow
+	case "warn":
+		output = `\u001b[33m${output}\u001b[0m`;
+		break;
+	
+	// Output message in blue
+	case "http":
+	case "verbose":
+	case "debug":
+	case "silly":
+		output = `\u001b[36m${output}\u001b[0m`;
+		break;
+	
+	// Output message in white
+	case "info":
+	default:
+		break;
 	}
 	
 	return output;
