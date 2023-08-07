@@ -8,7 +8,7 @@ import { Database } from "./database";
 import { getCurrentCanvasSize } from "./configuration";
 
 /**
- * Returns a {@link PollResponse} containing the color and timestamp of the given tile.
+ * Returns a {@link WSPollResponse} containing the color and timestamp of the given tile.
  * @param coordinates Coordinates of tile
  */
 export async function action_poll(coordinates: Coordinates) {

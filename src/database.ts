@@ -1,9 +1,9 @@
 // src/database.ts
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
-/** @author HUE_TrashMe <heuhaufen@huechan.com> */
 
 import { createClient } from "redis";
+import { Buffer } from "buffer";
 
 import { logger } from "./logging";
 import { Colors, Coordinates } from "./types";
@@ -65,10 +65,10 @@ export class Database {
 			await this.setupClient();
 		}
 
-		const [color] = await this.client.bitField("place", [{
+		const [color] = await this.client.bitField(`place:${coordinates[1]}`, [{
 			"operation": "GET",
 			"encoding": "u4",
-			"offset": await this.calculateTileOffset(coordinates)
+			"offset": coordinates[0] * 4
 		}]);
 
 		return color ? color as Colors : Colors.White;
@@ -85,6 +85,38 @@ export class Database {
 		}
 
 		return Number(await this.client.get(`place_timestamp:${coordinates[0]}:${coordinates[1]}`));
+	}
+
+	/**
+	 * Reads the whole canvas from the database and returns it as a {@link Buffer}.
+	 * If the width of the canvas is odd, the last 4 bits of each row will consist of padding data.
+	 */
+	public static async getCanvas() {
+		// Check if client is ready to answer requests, if not wait
+		if (!this.client.isReady) {
+			await this.setupClient();
+		}
+
+		// Get canvas size
+		const canvasSize = await getCurrentCanvasSize();
+
+		// Create GET operation for every tile row
+		let transaction = await this.client.multi();
+		for (let i = 0; i < canvasSize[1]; i++) {
+			transaction = transaction.get(`place:${i}`);
+		}
+
+		// Execute all operations and write results to buffer
+		const outBuffer = Buffer.alloc(Math.ceil(canvasSize[0] / 2) * canvasSize[1]);
+		const results = await transaction.exec();
+		results.forEach((result, index) => {
+			// If the row is undefined, pad with null bytes
+			const rowStr = result ? result.toString() : "\0".repeat(Math.ceil(canvasSize[0] / 2));
+			const offset = Math.ceil(canvasSize[0] / 2) * index;
+			outBuffer.write(rowStr, offset);
+		});
+
+		return outBuffer;
 	}
 
 	/**
