@@ -2,11 +2,14 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
+import { Coordinates, Colors } from "./types";
 
 /**
- * Returns a string containing the full canvas as 4-bit binary data per tile.
+ * Overwrites the tile at the given coordinates with the given color and updates the corresponding timestamp.
+ * @param coordinates Coordinates of the tile to be written
+ * @param color Color to write to the given tile
  */
-export async function action_canvas() {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let outString: string;
+// eslint-disable-next-line
+async function action_canvas(coordinates: Coordinates, color: Colors) {
+	// TODO
 }

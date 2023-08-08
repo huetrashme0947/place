@@ -3,7 +3,6 @@
 // (c) 2023 HUE_TrashMe
 
 import { createClient } from "redis";
-import { Buffer } from "buffer";
 
 import { logger } from "./logging";
 import { Colors, Coordinates } from "./types";
@@ -33,26 +32,28 @@ export class Database {
 	}
 
 	/**
-	 * Overwrites the tile at the given coordinates with the given color and updates the corresponding timestamp.
-	 * @param coordinates Coordinates of the tile to be written
-	 * @param color Color to write to the given tile
+	 * Returns a string representing the given row
+	 * @param y Y-coordinate of row
 	 */
-	public static async setTile(coordinates: Coordinates, color: Colors) {
+	public static async getRow(y: number) {
 		// Check if client is ready to answer requests, if not wait
 		if (!this.client.isReady) {
 			await this.setupClient();
 		}
-		
-		// Update tile
-		await this.client.bitField("place", [{
-			"operation": "SET",
-			"encoding": "u4",
-			"offset": await this.calculateTileOffset(coordinates),
-			"value": color
-		}]);
 
-		// Update timestamp
-		await this.client.set(`place_timestamp:${coordinates[0]}:${coordinates[1]}`, Date.now());
+		// Retrieve row from database
+		const rowStr = await this.client.get(`place:${Math.round(y)}`);
+
+		// Get canvasWidth and calculate desired output string length
+		const [canvasWidth] = await getCurrentCanvasSize();
+		const outStrLen = Math.ceil(canvasWidth / 2);
+
+		// If null, return string containing null bytes
+		if (rowStr === null) return "\0".repeat(outStrLen);
+
+		// Pad or shorten string to fit desired length
+		if (rowStr.length < outStrLen) return rowStr.padEnd(outStrLen, "\0");
+		if (rowStr.length > outStrLen) return rowStr.slice(0, outStrLen);
 	}
 
 	/**
@@ -88,35 +89,26 @@ export class Database {
 	}
 
 	/**
-	 * Reads the whole canvas from the database and returns it as a {@link Buffer}.
-	 * If the width of the canvas is odd, the last 4 bits of each row will consist of padding data.
+	 * Overwrites the tile at the given coordinates with the given color and updates the corresponding timestamp.
+	 * @param coordinates Coordinates of the tile to be written
+	 * @param color Color to write to the given tile
 	 */
-	public static async getCanvas() {
+	public static async setTile(coordinates: Coordinates, color: Colors) {
 		// Check if client is ready to answer requests, if not wait
 		if (!this.client.isReady) {
 			await this.setupClient();
 		}
+		
+		// Update tile
+		await this.client.bitField("place", [{
+			"operation": "SET",
+			"encoding": "u4",
+			"offset": await this.calculateTileOffset(coordinates),
+			"value": color
+		}]);
 
-		// Get canvas size
-		const canvasSize = await getCurrentCanvasSize();
-
-		// Create GET operation for every tile row
-		let transaction = await this.client.multi();
-		for (let i = 0; i < canvasSize[1]; i++) {
-			transaction = transaction.get(`place:${i}`);
-		}
-
-		// Execute all operations and write results to buffer
-		const outBuffer = Buffer.alloc(Math.ceil(canvasSize[0] / 2) * canvasSize[1]);
-		const results = await transaction.exec();
-		results.forEach((result, index) => {
-			// If the row is undefined, pad with null bytes
-			const rowStr = result ? result.toString() : "\0".repeat(Math.ceil(canvasSize[0] / 2));
-			const offset = Math.ceil(canvasSize[0] / 2) * index;
-			outBuffer.write(rowStr, offset);
-		});
-
-		return outBuffer;
+		// Update timestamp
+		await this.client.set(`place_timestamp:${coordinates[0]}:${coordinates[1]}`, Date.now());
 	}
 
 	/**
