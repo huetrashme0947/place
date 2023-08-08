@@ -9,7 +9,7 @@ import jsonminify from "jsonminify";
 import { logger } from "./logging";
 import { Coordinates } from "./types";
 
-const CONFIG_FILE = "place.config.json";
+const CONFIG_FILE = "placeconfig.jsonc";
 
 let configuration: Configuration;
 
