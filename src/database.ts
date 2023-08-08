@@ -54,6 +54,8 @@ export class Database {
 		// Pad or shorten string to fit desired length
 		if (rowStr.length < outStrLen) return rowStr.padEnd(outStrLen, "\0");
 		if (rowStr.length > outStrLen) return rowStr.slice(0, outStrLen);
+
+		return rowStr;
 	}
 
 	/**
