@@ -1,3 +1,7 @@
+// tests/poll.test.ts
+// Huechan /place/ Backend
+// (c) 2023 HUE_TrashMe
+
 import { silenceLogger } from "../src/logging";
 import { Coordinates } from "../src/types";
 import { action_poll } from "../src/poll";
@@ -7,8 +11,8 @@ import { Database } from "../src/database";
 // Prevent the called functions from logging while testing
 silenceLogger();
 
-describe("poll.action_poll()", () => {
-	test("Expect poll.action() to return correct color and timestamp", async () => {
+describe("action_poll()", () => {
+	it("returns the correct color and timestamp", async () => {
 		// Mock getCurrentCanvasSize() to return [100,100]
 		const getCurrentCanvasSizeMock = jest.spyOn(configuration, "getCurrentCanvasSize");
 		getCurrentCanvasSizeMock.mockImplementation(async () => [100,100] as Coordinates);
@@ -34,7 +38,7 @@ describe("poll.action_poll()", () => {
 		return;
 	});
 
-	test("Expect poll.action_poll() to fail if given coordinates are bigger than canvas size", async () => {
+	it("fails if given coordinates are bigger than canvas size", async () => {
 		// Mock getCurrentCanvasSize() to return [1,1]
 		const getCurrentCanvasSizeMock = jest.spyOn(configuration, "getCurrentCanvasSize");
 		getCurrentCanvasSizeMock.mockImplementation(async () => [1,1] as Coordinates);
