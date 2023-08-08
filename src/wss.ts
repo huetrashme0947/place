@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Coordinates, Colors } from "./types";
 import { action_poll } from "./poll";
 import { logger } from "./logging";
+import { action_canvas } from "./canvas";
 
 const clients: { [index: string]: WebSocket } = {};
 
@@ -45,26 +46,31 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 			return;
 		}
 
-		let res: WSResponse;
+		if (req.action != WSRequestActions.Canvas) {
+			let res: WSResponse;
 
-		if (req.action == WSRequestActions.Canvas) {
-			return;
-		} else if (req.action == WSRequestActions.Poll && req.coordinates) {
-			res = await action_poll(req.coordinates);
-		} else if (req.action == WSRequestActions.Draw) {
+			if (req.action == WSRequestActions.Poll && req.coordinates) {
+				res = await action_poll(req.coordinates);
+			} else if (req.action == WSRequestActions.Draw) {
+				return;
+			} else {
+				res = {
+					success: false,
+					action: WSRequestActions.Unknown,
+					error_code: 400		// 400 Bad Request
+				} as WSErrorResponse;
+				req.action = WSRequestActions.Unknown;
+			}
+
+			ws.send(JSON.stringify(res));
+			logger.http(`[wss] [${getUUID(ws)}] Answered "${req.action}" request (success=${res.success})`);
 			return;
 		} else {
-			res = {
-				success: false,
-				action: WSRequestActions.Unknown,
-				error_code: 400		// 400 Bad Request
-			} as WSErrorResponse;
-			req.action = WSRequestActions.Unknown;
+			const res = await action_canvas();
+			ws.send(res);
+			logger.http(`[wss] [${getUUID(ws)}] Answered "${req.action}" request (success=true)`);
+			return;
 		}
-
-		ws.send(JSON.stringify(res));
-		logger.http(`[wss] [${getUUID(ws)}] Answered "${req.action}" request (success=${res.success})`);
-		return;
 	});
 
 	function closeWS() {

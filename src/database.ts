@@ -32,7 +32,7 @@ export class Database {
 	}
 
 	/**
-	 * Returns a string representing the given row
+	 * Returns a Buffer representing the given row
 	 * @param y Y-coordinate of row
 	 */
 	public static async getRow(y: number) {
@@ -41,21 +41,24 @@ export class Database {
 			await this.setupClient();
 		}
 
-		// Retrieve row from database
-		const rowStr = await this.client.get(`place:${Math.round(y)}`);
+		// Retrieve row from database and return as Buffer (see https://github.com/redis/node-redis/issues/2593)
+		const rowBuf = await this.client.get(this.client.commandOptions({returnBuffers: true}), `place:${Math.round(y)}`);
 
-		// Get canvasWidth and calculate desired output string length
+		// Get canvasWidth and calculate desired output buffer length
 		const [canvasWidth] = await getCurrentCanvasSize();
-		const outStrLen = Math.ceil(canvasWidth / 2);
+		const outBufLen = Math.ceil(canvasWidth / 2);
 
-		// If null, return string containing null bytes
-		if (rowStr === null) return "\0".repeat(outStrLen);
+		// If null, return buffer containing null bytes
+		if (rowBuf === null) return Buffer.alloc(outBufLen);
 
-		// Pad or shorten string to fit desired length
-		if (rowStr.length < outStrLen) return rowStr.padEnd(outStrLen, "\0");
-		if (rowStr.length > outStrLen) return rowStr.slice(0, outStrLen);
-
-		return rowStr;
+		// Pad or shorten buffer to fit desired length
+		if (rowBuf.length < outBufLen) {
+			return Buffer.concat([rowBuf, Buffer.alloc(outBufLen - rowBuf.length)]);
+		} else if (rowBuf.length > outBufLen) {
+			return rowBuf.subarray(outBufLen);
+		} else {
+			return rowBuf;
+		}
 	}
 
 	/**
