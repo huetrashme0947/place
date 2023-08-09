@@ -35,8 +35,11 @@ export enum Colors {
 	Albania
 }
 
+/**
+ * Returns true if the given coordinates are valid at the time being. Returns false if they are not.
+ * @param coordinates Coordinates
+ */
 export async function checkCoordinates(coordinates: Coordinates) {
-	// Check if coordinates are valid
 	const canvasSize = await getCurrentCanvasSize();
 	return !(coordinates[0] < 0 ||
 		coordinates[0] >= canvasSize[0] ||

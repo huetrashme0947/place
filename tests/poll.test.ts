@@ -5,6 +5,7 @@
 import { silenceLogger } from "../src/logging";
 import { Coordinates } from "../src/types";
 import { action_poll } from "../src/poll";
+import * as types from "../src/types";
 import * as configuration from "../src/configuration";
 import { Database } from "../src/database";
 
@@ -38,10 +39,10 @@ describe("action_poll()", () => {
 		return;
 	});
 
-	it("fails if given coordinates are bigger than canvas size", async () => {
+	it("fails if given coordinates are faulty or bigger than canvas size", async () => {
 		// Mock getCurrentCanvasSize() to return [1,1]
-		const getCurrentCanvasSizeMock = jest.spyOn(configuration, "getCurrentCanvasSize");
-		getCurrentCanvasSizeMock.mockImplementation(async () => [1,1] as Coordinates);
+		const checkCoordinatesMock = jest.spyOn(types, "checkCoordinates");
+		checkCoordinatesMock.mockImplementation(async () => false);
 
 		expect((await action_poll([0,1])).success).toStrictEqual(false);
 		expect((await action_poll([0,2])).success).toStrictEqual(false);
@@ -53,7 +54,7 @@ describe("action_poll()", () => {
 		expect((await action_poll([2,2])).success).toStrictEqual(false);
 
 		// Restore mocks
-		getCurrentCanvasSizeMock.mockRestore();
+		checkCoordinatesMock.mockRestore();
 		return;
 	});
 });
