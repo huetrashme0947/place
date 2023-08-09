@@ -12,7 +12,7 @@ import { Database } from "./database";
  */
 export async function action_poll(coordinates: Coordinates) {
 	// Check if coordinates are valid
-	if (await checkCoordinates(coordinates)) {
+	if (!(await checkCoordinates(coordinates))) {
 		return {
 			success: false,
 			action: WSRequestActions.Poll,
