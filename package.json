@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx tsc && node build/index.js",
     "lint": "npx eslint ./",
-    "test": "npx jest"
+    "test": "npx jest",
+    "build": "(npm run lint && npm run test && npx tsc && printf '\\x00\\x1b[92mBuild successful.\\x00\\x1b[0m\\n') || printf '\\x00\\x1b[91mBuild failed.\\x00\\x1b[0m\\n'"
   },
   "author": "HUE_TrashMe",
   "license": "UNLICENSED",
