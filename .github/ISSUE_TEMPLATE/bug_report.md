@@ -16,11 +16,6 @@ Code to reproduce the behavior.
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
 **Environment (please complete the following information):**
  - Place Version: [e.g. 1.0.0]
  - Node Version: [e.g. 18.16.0]
