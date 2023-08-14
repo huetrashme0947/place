@@ -2,6 +2,7 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
+import { platform } from "os";
 import { logger, silenceLogger } from "./logging";
 import { createWss } from "./wss";
 import { ConfigurationKeys, getConfigValue } from "./configuration";
@@ -18,6 +19,13 @@ export async function main(silent = false) {
 		console.log(`Huechan /place/ Backend ${PACKAGE_VERSION}\n(c) 2023 HUE_TrashMe\n`);
 	} else {
 		silenceLogger();
+	}
+
+	if (platform() == "win32") {
+		logger.warn("Huechan Place is designed to run on UNIX-compatible systems. While\n"+
+		" ".repeat(34)+"usage on non-UNIX systems like Microsoft Windows is technically\n"+
+		" ".repeat(34)+"possible, there may be unexpected behavior. Please refer to the\n"+
+		" ".repeat(34)+"documentation for more information. Proceed with caution.");
 	}
 
 	// Test configuration and database modules
