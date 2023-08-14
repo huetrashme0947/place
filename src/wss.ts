@@ -10,6 +10,7 @@ import { Coordinates, Colors } from "./types";
 import { action_poll } from "./poll";
 import { logger } from "./logging";
 import { action_canvas } from "./canvas";
+import { action_draw } from "./draw";
 
 const clients: { [index: string]: WebSocket } = {};
 
@@ -51,8 +52,8 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 
 			if (req.action == WSRequestActions.Poll && req.coordinates) {
 				res = await action_poll(req.coordinates);
-			} else if (req.action == WSRequestActions.Draw) {
-				return;
+			} else if (req.action == WSRequestActions.Draw && req.coordinates && req.color) {
+				res = await action_draw(req.coordinates, req.color);
 			} else {
 				res = {
 					success: false,

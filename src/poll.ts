@@ -2,22 +2,22 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
-import { Colors, Coordinates, checkCoordinates } from "./types";
-import { WSSuccessResponse, WSRequestActions, WSErrorResponse } from "./wss";
+import { Colors, Coordinates, WSReturnsTileResponse, checkCoordinates } from "./types";
+import { WSRequestActions, WSErrorResponse } from "./wss";
 import { Database } from "./database";
 
 /**
- * Returns a {@link WSPollResponse} containing the color and timestamp of the given tile.
+ * Returns a {@link WSPollResponse} containing the color and timestamp of the given tile or a {@link WSErrorResponse} in case of invalid coordinates.
  * @param coordinates Coordinates of tile
  */
-export async function action_poll(coordinates: Coordinates) {
+export async function action_poll(coordinates: Coordinates): Promise<WSErrorResponse | WSPollResponse> {
 	// Check if coordinates are valid
 	if (!(await checkCoordinates(coordinates))) {
 		return {
 			success: false,
 			action: WSRequestActions.Poll,
 			error_code: 403		// 403 Forbidden
-		} as WSErrorResponse;
+		};
 	}
 
 	const res: WSPollResponse = {
@@ -35,8 +35,6 @@ export async function action_poll(coordinates: Coordinates) {
 	return res;
 }
 
-interface WSPollResponse extends WSSuccessResponse {
-	coordinates: Coordinates,
-	color: Colors,
-	timestamp: number
+interface WSPollResponse extends WSReturnsTileResponse {
+	action: WSRequestActions.Poll
 }

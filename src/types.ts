@@ -3,6 +3,7 @@
 // (c) 2023 HUE_TrashMe
 
 import { getCurrentCanvasSize } from "./configuration";
+import { WSSuccessResponse } from "./wss";
 
 /**
  * Coordinates of a tile on the /place/ canvas.
@@ -33,6 +34,15 @@ export enum Colors {
 	
 	Serbia,
 	Albania
+}
+
+/**
+ * Response returned by the WebSocket server containing coordinates, color and timestamp of a tile.
+ */
+export interface WSReturnsTileResponse extends WSSuccessResponse {
+	coordinates: Coordinates,
+	color: Colors,
+	timestamp: number
 }
 
 /**

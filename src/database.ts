@@ -94,7 +94,7 @@ export class Database {
 	}
 
 	/**
-	 * Overwrites the tile at the given coordinates with the given color and updates the corresponding timestamp.
+	 * Overwrites the tile at the given coordinates with the given color, updates the corresponding timestamp and returns the timestamp.
 	 * @param coordinates Coordinates of the tile to be written
 	 * @param color Color to write to the given tile
 	 */
@@ -105,15 +105,18 @@ export class Database {
 		}
 		
 		// Update tile
-		await this.client.bitField("place", [{
+		await this.client.bitField(`place:${coordinates[1]}`, [{
 			"operation": "SET",
 			"encoding": "u4",
-			"offset": await this.calculateTileOffset(coordinates),
+			"offset": coordinates[0] * 4,
 			"value": color
 		}]);
 
 		// Update timestamp
-		await this.client.set(`place_timestamp:${coordinates[0]}:${coordinates[1]}`, Date.now());
+		const timestamp = Date.now();
+		await this.client.set(`place_timestamp:${coordinates[0]}:${coordinates[1]}`, timestamp);
+
+		return timestamp;
 	}
 
 	/**
