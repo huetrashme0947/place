@@ -4,7 +4,7 @@
 
 import { Database } from "./database";
 import { Colors, Coordinates, WSReturnsTileResponse, checkCoordinates } from "./types";
-import { WSRequestActions, WSErrorResponse } from "./wss";
+import { WSRequestActions, WSErrorResponse } from "./types";
 
 /**
  * Updates the given tile with the given color.

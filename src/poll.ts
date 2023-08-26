@@ -3,7 +3,7 @@
 // (c) 2023 HUE_TrashMe
 
 import { Colors, Coordinates, WSReturnsTileResponse, checkCoordinates } from "./types";
-import { WSRequestActions, WSErrorResponse } from "./wss";
+import { WSRequestActions, WSErrorResponse } from "./types";
 import { Database } from "./database";
 
 /**

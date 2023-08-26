@@ -5,8 +5,9 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { IncomingMessage } from "http";
 import { v4 as uuidv4 } from "uuid";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 
-import { Coordinates, Colors } from "./types";
+import { WSErrorResponse, WSRequest, WSRequestActions, WSResponse } from "./types";
 import { action_poll } from "./poll";
 import { logger } from "./logging";
 import { action_canvas } from "./canvas";
@@ -88,48 +89,4 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 	clients[uuid] = ws;
 
 	logger.http(`[wss] [${uuid}] Connection established with ${httpReq.socket.remoteAddress}`);
-}
-
-/**
- * Incoming WebSocket request received by a client.
- */
-interface WSRequest {
-	action: WSRequestActions,
-	coordinates?: Coordinates,
-	color?: Colors
-}
-
-/**
- * Actions supported by the WebSocket server.
- */
-export enum WSRequestActions {
-	Info = "info",
-	Canvas = "canvas",
-	Poll = "poll",
-	Draw = "draw",
-	Unknown = "unknown"
-}
-
-/**
- * Response returned by the WebSocket server.
- */
-export interface WSResponse {
-	success: boolean
-}
-
-/**
- * Response returned by the WebSocket server in case of an successful action.
- */
-export interface WSSuccessResponse extends WSResponse {
-	success: true,
-	action: WSRequestActions
-}
-
-/**
- * Response returned by the WebSocket server in case of an unsuccessful action or invalid request.
- */
-export interface WSErrorResponse extends WSResponse {
-	success: false,
-	action: WSRequestActions,
-	error_code: number
 }

@@ -3,7 +3,6 @@
 // (c) 2023 HUE_TrashMe
 
 import { getCurrentCanvasSize } from "./configuration";
-import { WSSuccessResponse } from "./wss";
 
 /**
  * Coordinates of a tile on the /place/ canvas.
@@ -55,4 +54,48 @@ export async function checkCoordinates(coordinates: Coordinates) {
 		coordinates[0] >= canvasSize[0] ||
 		coordinates[1] < 0 ||
 		coordinates[1] >= canvasSize[1]);
+}
+
+/**
+ * Incoming WebSocket request received by a client.
+ */
+export interface WSRequest {
+	action: WSRequestActions,
+	coordinates?: Coordinates,
+	color?: Colors
+}
+
+/**
+ * Actions supported by the WebSocket server.
+ */
+export enum WSRequestActions {
+	Info = "info",
+	Canvas = "canvas",
+	Poll = "poll",
+	Draw = "draw",
+	Unknown = "unknown"
+}
+
+/**
+ * Response returned by the WebSocket server.
+ */
+export interface WSResponse {
+	success: boolean
+}
+
+/**
+ * Response returned by the WebSocket server in case of an successful action.
+ */
+export interface WSSuccessResponse extends WSResponse {
+	success: true,
+	action: WSRequestActions
+}
+
+/**
+ * Response returned by the WebSocket server in case of an unsuccessful action or invalid request.
+ */
+export interface WSErrorResponse extends WSResponse {
+	success: false,
+	action: WSRequestActions,
+	error_code: number
 }
