@@ -2,6 +2,7 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
+import { startCooldown } from "./cooldown";
 import { Database } from "./database";
 import { Colors, Coordinates, WSReturnsTileResponse, checkCoordinates } from "./types";
 import { WSRequestActions, WSErrorResponse } from "./types";
@@ -11,9 +12,19 @@ import { WSRequestActions, WSErrorResponse } from "./types";
  * @param coordinates Coordinates of tile
  * @param color A color
  */
-export async function action_draw(coordinates: Coordinates, color: Colors): Promise<WSErrorResponse | WSDrawResponse> {
+export async function action_draw(coordinates: Coordinates, color: Colors, remoteAddr: string): Promise<WSErrorResponse | WSDrawResponse> {
 	// Check if coordinates are valid
 	if (!(await checkCoordinates(coordinates))) {
+		return {
+			success: false,
+			action: WSRequestActions.Draw,
+			error_code: 400		// 400 Bad Request
+		};
+	}
+
+	// Start cooldown
+	if (await startCooldown(remoteAddr) !== 0) {
+		// Cooldown already active
 		return {
 			success: false,
 			action: WSRequestActions.Draw,

@@ -5,7 +5,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { IncomingMessage } from "http";
 import { v4 as uuidv4 } from "uuid";
-import { RateLimiterMemory } from "rate-limiter-flexible";
 
 import { WSErrorResponse, WSRequest, WSRequestActions, WSResponse } from "./types";
 import { action_poll } from "./poll";
@@ -54,7 +53,7 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 			if (req.action == WSRequestActions.Poll && req.coordinates) {
 				res = await action_poll(req.coordinates);
 			} else if (req.action == WSRequestActions.Draw && req.coordinates && req.color) {
-				res = await action_draw(req.coordinates, req.color);
+				res = await action_draw(req.coordinates, req.color, (httpReq.socket.remoteAddress as string));
 			} else {
 				res = {
 					success: false,
