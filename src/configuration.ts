@@ -23,11 +23,11 @@ export enum ConfigurationKeys {
 	CanvasSizeFirstExpansion = "canvas_size_first_expansion",
 	SecondExpansion = "second_expansion",
 	CanvasSizeSecondExpansion = "canvas_size_second_expansion",
-	AlbaniaModeStartup = "albania_mode_startup",
+	SpecialModeStartup = "special_mode_startup",
 	Shutdown = "shutdown",
 	SnapshotInterval = "snapshot_interval",
 	DrawCooldown = "draw_cooldown",
-	AlbaniaCooldown = "albania_cooldown"
+	SpecialCooldown = "special_cooldown"
 }
 
 /**
@@ -40,11 +40,11 @@ export interface Configuration {
 	[ConfigurationKeys.CanvasSizeFirstExpansion]: Coordinates,
 	[ConfigurationKeys.SecondExpansion]: string,
 	[ConfigurationKeys.CanvasSizeSecondExpansion]: Coordinates,
-	[ConfigurationKeys.AlbaniaModeStartup]: string,
+	[ConfigurationKeys.SpecialModeStartup]: string,
 	[ConfigurationKeys.Shutdown]: string,
 	[ConfigurationKeys.SnapshotInterval]: number,
 	[ConfigurationKeys.DrawCooldown]: number,
-	[ConfigurationKeys.AlbaniaCooldown]: number
+	[ConfigurationKeys.SpecialCooldown]: number
 }
 
 /**
@@ -77,10 +77,10 @@ export async function getCurrentCanvasSize() {
 }
 
 /**
- * Returns whether Albania mode is currently in force, meaning that only Albania and Serbia tiles can be drawn.
+ * Returns whether Special mode is currently in force, meaning that only Colors.Special0 and Colors.Special1 tiles can be drawn.
  */
-export async function checkForAlbaniaMode() {
-	return Date.now() >= Date.parse(String(await getConfigValue(ConfigurationKeys.AlbaniaModeStartup)));
+export async function checkForSpecialMode() {
+	return Date.now() >= Date.parse(String(await getConfigValue(ConfigurationKeys.SpecialModeStartup)));
 }
 
 /**

@@ -3,7 +3,7 @@
 // (c) 2023 HUE_TrashMe
 
 import { RateLimiterMemory, RateLimiterRes } from "rate-limiter-flexible";
-import { ConfigurationKeys, checkForAlbaniaMode, getConfigValue } from "./configuration";
+import { ConfigurationKeys, checkForSpecialMode, getConfigValue } from "./configuration";
 
 let rateLimiter: RateLimiterMemory, rateLimiterSpecial: RateLimiterMemory;
 
@@ -17,7 +17,7 @@ async function setupRateLimiters() {
 	});
 	rateLimiterSpecial = new RateLimiterMemory({
 		points: 1,
-		duration: await getConfigValue(ConfigurationKeys.AlbaniaCooldown)
+		duration: await getConfigValue(ConfigurationKeys.SpecialCooldown)
 	});
 }
 
@@ -34,7 +34,7 @@ export async function startCooldown(remoteAddr: string) {
 
 	// Try consuming 1 point
 	try {
-		await (await checkForAlbaniaMode() ? rateLimiterSpecial : rateLimiter).consume(remoteAddr, 1);
+		await (await checkForSpecialMode() ? rateLimiterSpecial : rateLimiter).consume(remoteAddr, 1);
 		return 0;
 	} catch (res) {
 		// Failed, so cooldown is active

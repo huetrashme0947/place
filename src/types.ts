@@ -31,8 +31,8 @@ export enum Colors {
 	OceanBlue,
 	DarkBlue,
 	
-	Serbia,
-	Albania
+	Special0,
+	Special1
 }
 
 /**
