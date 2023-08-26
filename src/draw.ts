@@ -2,6 +2,7 @@
 // Huechan /place/ Backend
 // (c) 2023 HUE_TrashMe
 
+import { checkForSpecialMode } from "./configuration";
 import { startCooldown } from "./cooldown";
 import { Database } from "./database";
 import { Colors, Coordinates, WSReturnsTileResponse, checkCoordinates } from "./types";
@@ -19,6 +20,15 @@ export async function action_draw(coordinates: Coordinates, color: Colors, remot
 			success: false,
 			action: WSRequestActions.Draw,
 			error_code: 400		// 400 Bad Request
+		};
+	}
+
+	// If Special mode is active, check if colors is Colors.Special0 or Colors.Special1
+	if (await checkForSpecialMode() && color != Colors.Special0 && color != Colors.Special1) {
+		return {
+			success: false,
+			action: WSRequestActions.Draw,
+			error_code: 403		// 403 Forbidden
 		};
 	}
 
