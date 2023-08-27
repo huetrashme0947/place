@@ -3,7 +3,7 @@
 
 # Huechan Place
 
-[![CI](https://github.com/huetrashme0947/huechan-place-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/huetrashme0947/huechan-place-backend/actions/workflows/ci.yml)
+[![CI](https://github.com/huetrashme0947/place/actions/workflows/ci.yml/badge.svg)](https://github.com/huetrashme0947/place/actions/workflows/ci.yml)
 
 Huechan Place is a server implementing an r/place inspired but not compatible service, where users can draw a tile in a set interval and receive real-time canvas updates over a WebSocket connection. It also supports features like canvas expansion/reduction on a set timestamp and the 'Special Mode', during which only two special tile colors can be drawn.
 
@@ -20,7 +20,7 @@ Huechan Place is a server implementing an r/place inspired but not compatible se
 Clone the repository:
 
 ```bash
-git clone https://github.com/huetrashme0947/huechan-place-backend
+git clone https://github.com/huetrashme0947/place
 cd huechan-place-backend
 ```
 
