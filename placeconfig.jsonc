@@ -9,9 +9,9 @@
     "canvas_size_first_expansion": [4, 4],              /* Size of the canvas in px after the first expansion */
     "second_expansion": "2023-08-26T00:00:00Z",         /* Timestamp of the second canvas expansion */
     "canvas_size_second_expansion": [4, 4],             /* Size of the canvas in px after the second expansion */
-    "special_mode_startup": "2023-08-26T22:00:00Z",     /* Timestamp when API should start allowing only two special tiles to be drawn */
-    "shutdown": "2023-08-27T23:59:59Z",                 /* Timestamp when access to the API should be closed */
+    "special_mode_startup": "2023-08-27T22:00:00Z",     /* Timestamp when API should start allowing only two special tiles to be drawn */
+    "shutdown": "2023-08-28T23:59:59Z",                 /* Timestamp when access to the API should be closed */
     "snapshot_interval": 60,                            /* Number of seconds how often a snapshot of the canvas should be taken */
-    "draw_cooldown": 10,                                /* Number of seconds how long a user has to wait after placing a tile to place a new one */
+    "draw_cooldown": 30,                                /* Number of seconds how long a user has to wait after placing a tile to place a new one */
     "special_cooldown": 2                               /* Number of seconds  how long a user has to wait in Special mode after placing a tile to place a new one */
 }
