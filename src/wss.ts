@@ -56,6 +56,8 @@ async function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 				res = await action_poll(req.coordinates);
 			} else if (req.action == WSRequestActions.Draw && req.coordinates !== undefined && req.color !== undefined) {
 				res = await action_draw(req.coordinates, req.color, (httpReq.socket.remoteAddress as string));
+
+				if (res.success) broadcastMessage(res, getUUID(ws));
 			} else {
 				res = {
 					success: false,
@@ -94,4 +96,17 @@ async function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 	// Send info to client
 	const res = await action_info(httpReq.socket.remoteAddress as string);
 	ws.send(JSON.stringify(res));
+}
+
+/**
+ * Sends the given respons to all clients currently connected, except the one given.
+ * @param message Response to send
+ * @param exclude UUID of the client to be excluded
+ */
+function broadcastMessage(message: WSResponse, exclude: string) {
+	let k: keyof typeof clients;
+	for (k in clients) {
+		if (k === exclude) continue;
+		clients[k].send(JSON.stringify(message));
+	}
 }
