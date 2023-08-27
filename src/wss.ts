@@ -11,6 +11,7 @@ import { action_poll } from "./poll";
 import { logger } from "./logging";
 import { action_canvas } from "./canvas";
 import { action_draw } from "./draw";
+import { action_info } from "./info";
 
 const clients: { [index: string]: WebSocket } = {};
 
@@ -49,8 +50,9 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 
 		if (req.action != WSRequestActions.Canvas) {
 			let res: WSResponse;
-
-			if (req.action == WSRequestActions.Poll && req.coordinates) {
+			if (req.action == WSRequestActions.Info) {
+				res = await action_info((httpReq.socket.remoteAddress as string));
+			} else if (req.action == WSRequestActions.Poll && req.coordinates) {
 				res = await action_poll(req.coordinates);
 			} else if (req.action == WSRequestActions.Draw && req.coordinates && req.color) {
 				res = await action_draw(req.coordinates, req.color, (httpReq.socket.remoteAddress as string));

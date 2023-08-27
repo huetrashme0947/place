@@ -12,6 +12,7 @@ import { WSRequestActions, WSErrorResponse } from "./types";
  * Updates the given tile with the given color.
  * @param coordinates Coordinates of tile
  * @param color A color
+ * @param remoteAddr Remote address of a user
  */
 export async function action_draw(coordinates: Coordinates, color: Colors, remoteAddr: string): Promise<WSErrorResponse | WSDrawResponse> {
 	// Check if coordinates are valid

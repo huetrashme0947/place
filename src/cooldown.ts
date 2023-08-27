@@ -41,3 +41,18 @@ export async function startCooldown(remoteAddr: string) {
 		return (res as RateLimiterRes).msBeforeNext;
 	}
 }
+
+/**
+ * Returns the time remaining before the cooldown of the given user ends, or 0 if there is no active cooldown.
+ * @param remoteAddr Remote address of a user
+ */
+export async function getRemainingTime(remoteAddr: string) {
+	// Check if rate limiters are ready
+	if (!rateLimiter || !rateLimiterSpecial) {
+		await setupRateLimiters();
+	}
+	
+	const res = await (await checkForSpecialMode() ? rateLimiterSpecial : rateLimiter).get(remoteAddr);
+	if (!res || res.msBeforeNext == 0) return 0;
+	return res.msBeforeNext;
+}
