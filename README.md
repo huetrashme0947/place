@@ -1,9 +1,11 @@
 
+> :warning: This project is still in development and **should under no circumstances be used in a production environment.** The code is largely undocumented and test coverage is below 10%.
+
 # Huechan Place
 
-![CI](https://github.com/huetrashme0947/huechan-place-backend/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/huetrashme0947/huechan-place-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/huetrashme0947/huechan-place-backend/actions/workflows/ci.yml)
 
-Huechan Place is a server implementing an r/place inspired service, where users can draw a tile in a set interval and receive real-time canvas updates over a WebSocket connection. It also supports features like canvas expansion/reduction on a set timestamp and the 'Special Mode', during which only two special tile colors can be drawn.
+Huechan Place is a server implementing an r/place inspired but not compatible service, where users can draw a tile in a set interval and receive real-time canvas updates over a WebSocket connection. It also supports features like canvas expansion/reduction on a set timestamp and the 'Special Mode', during which only two special tile colors can be drawn.
 
 - Uses WebSocket for real-time communication with clients
 - Uses Redis for fast tile manipulation and retrieval
