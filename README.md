@@ -21,7 +21,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/huetrashme0947/place
-cd huechan-place-backend
+cd place
 ```
 
 Install dependencies and build:
