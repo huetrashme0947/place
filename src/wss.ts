@@ -32,7 +32,7 @@ export function createWss() {
 	return wss;
 }
 
-function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
+async function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 	ws.on("message", async (data) => {
 		let req: WSRequest;
 		// Try parsing data as JSON, else return error
@@ -90,4 +90,8 @@ function wssOnconnection(ws: WebSocket, httpReq: IncomingMessage) {
 	clients[uuid] = ws;
 
 	logger.http(`[wss] [${uuid}] Connection established with ${httpReq.socket.remoteAddress}`);
+
+	// Send info to client
+	const res = await action_info(httpReq.socket.remoteAddress as string);
+	ws.send(JSON.stringify(res));
 }
