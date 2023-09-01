@@ -9,11 +9,12 @@ import * as types from "../src/types";
 import * as configuration from "../src/configuration";
 import { Database } from "../src/database";
 
-// Prevent the called functions from logging while testing
-silenceLogger();
+
 
 describe("action_poll()", () => {
 	it("returns the correct color and timestamp", async () => {
+		await silenceLogger();
+
 		// Mock getCurrentCanvasSize() to return [100,100]
 		const getCurrentCanvasSizeMock = jest.spyOn(configuration, "getCurrentCanvasSize");
 		getCurrentCanvasSizeMock.mockImplementation(async () => [100,100] as Coordinates);

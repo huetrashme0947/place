@@ -3,8 +3,7 @@
 // (c) 2023 HUE_TrashMe
 
 import * as winston from "winston";
-
-const LOGFILE = "log/combined.log";
+import { ConfigurationKeys, getConfigValue } from "./configuration";
 
 const logfileFormat = winston.format.printf(({ level, message, timestamp }) => {
 	return `[${timestamp}] [${level}] ${message}`;
@@ -44,14 +43,21 @@ const consoleFormat = winston.format.printf(({ level, message, timestamp }) => {
 /**
  * Global interface for logging status messages to the console and a shared logfile.
  */
-export const logger = winston.createLogger({
-	level: "silly",
-	transports: [
-		new winston.transports.Console({ format: winston.format.combine(winston.format.timestamp(), consoleFormat) }),
-		new winston.transports.File({ filename: LOGFILE, level: "info", format: winston.format.combine(winston.format.timestamp(), logfileFormat) })
-	]
-});
+export let logger: winston.Logger;
 
-export function silenceLogger() {
+// Get logfile path and init logger
+export async function setupLogger() {
+	logger = winston.createLogger({
+		level: "silly",
+		transports: [
+			new winston.transports.Console({ format: winston.format.combine(winston.format.timestamp(), consoleFormat) })
+		]
+	});
+	const logfile = await getConfigValue(ConfigurationKeys.LogfilePath);
+	logger.add(new winston.transports.File({ filename: logfile, level: "info", format: winston.format.combine(winston.format.timestamp(), logfileFormat) }));
+}
+
+export async function silenceLogger() {
+	if (!logger) await setupLogger();
 	logger.silent = true;
 }

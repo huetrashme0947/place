@@ -3,7 +3,7 @@
 // (c) 2023 HUE_TrashMe
 
 import { platform } from "os";
-import { logger, silenceLogger } from "./logging";
+import { logger, setupLogger, silenceLogger } from "./logging";
 import { createWss } from "./wss";
 import { ConfigurationKeys, getConfigValue } from "./configuration";
 import { Database } from "./database";
@@ -15,6 +15,9 @@ const PACKAGE_VERSION = "1.0.0";
  * @alpha
  */
 export async function main(silent = false) {
+	// Setup logger
+	await setupLogger();
+
 	if (!silent) {
 		console.log(`Huechan /place/ Backend ${PACKAGE_VERSION}\n(c) 2023 HUE_TrashMe\n`);
 	} else {

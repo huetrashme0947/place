@@ -25,7 +25,10 @@ export enum ConfigurationKeys {
 	CanvasSizeSecondExpansion = "canvas_size_second_expansion",
 	SpecialModeStartup = "special_mode_startup",
 	Shutdown = "shutdown",
+	LogfilePath = "logfile_path",
+	LogfileVerbosity = "logfile_verbosity",
 	SnapshotInterval = "snapshot_interval",
+	SnapshotPath = "snapshot_path",
 	DrawCooldown = "draw_cooldown",
 	SpecialCooldown = "special_cooldown"
 }
@@ -42,7 +45,10 @@ export interface Configuration {
 	[ConfigurationKeys.CanvasSizeSecondExpansion]: Coordinates,
 	[ConfigurationKeys.SpecialModeStartup]: string,
 	[ConfigurationKeys.Shutdown]: string,
+	[ConfigurationKeys.LogfilePath]: string,
+	[ConfigurationKeys.LogfileVerbosity]: never,
 	[ConfigurationKeys.SnapshotInterval]: number,
+	[ConfigurationKeys.SnapshotPath]: string,
 	[ConfigurationKeys.DrawCooldown]: number,
 	[ConfigurationKeys.SpecialCooldown]: number
 }
@@ -96,6 +102,4 @@ async function readConfigFile() {
 		logger.error(`[configuration] ${resolve(CONFIG_FILE)} could not be read or is not a valid JSON file.`);
 		throw err;
 	}
-
-	logger.info("[configuration] Ready");
 }
